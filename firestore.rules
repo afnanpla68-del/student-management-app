@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidStudent(data) {
+      return data.keys().hasAll(['studentId', 'fullName', 'gradeLevel', 'attendanceStatus', 'midtermScore', 'finalScore', 'totalScore', 'grade', 'creatorUid'])
+        && data.keys().hasOnly(['studentId', 'fullName', 'gradeLevel', 'attendanceStatus', 'midtermScore', 'finalScore', 'totalScore', 'grade', 'creatorUid', 'createdAt', 'updatedAt'])
+        && data.studentId is string && data.studentId.size() > 0 && data.studentId.size() <= 32
+        && data.fullName is string && data.fullName.size() > 0 && data.fullName.size() <= 100
+        && data.gradeLevel is string && data.gradeLevel.size() > 0 && data.gradeLevel.size() <= 32
+        && data.attendanceStatus in ['มา', 'ลา', 'ขาด']
+        && data.midtermScore is number && data.midtermScore >= 0 && data.midtermScore <= 50
+        && data.finalScore is number && data.finalScore >= 0 && data.finalScore <= 50
+        && data.totalScore is number && data.totalScore >= 0 && data.totalScore <= 100
+        && data.grade is string && data.grade.size() <= 10
+        && data.creatorUid is string && data.creatorUid == request.auth.uid;
+    }
+
+    // Students collection
+    match /students/{studentDocId} {
+      allow get: if isSignedIn() && isValidId(studentDocId) && existing().creatorUid == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.creatorUid == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(studentDocId) && isValidStudent(incoming());
+      allow update: if isSignedIn() && isValidId(studentDocId) && isValidStudent(incoming()) && existing().creatorUid == request.auth.uid && incoming().creatorUid == existing().creatorUid;
+      allow delete: if isSignedIn() && isValidId(studentDocId) && existing().creatorUid == request.auth.uid;
+    }
+  }
+}

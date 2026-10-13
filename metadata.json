@@ -1,0 +1,7 @@
+{
+  "name": "Student Education Hub",
+  "description": "ระบบสารสนเทศและการจัดการข้อมูลนักเรียน พร้อมแดชบอร์ดสรุปสถิติคะแนนและการเข้าเรียน",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

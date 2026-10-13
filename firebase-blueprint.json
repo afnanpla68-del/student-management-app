@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "Student": {
+      "title": "Student",
+      "description": "Student academic and attendance record",
+      "type": "object",
+      "properties": {
+        "studentId": {
+          "type": "string",
+          "description": "Unique student identifier code, e.g. STU1001",
+          "maxLength": 32,
+          "minLength": 1
+        },
+        "fullName": {
+          "type": "string",
+          "description": "Student full name in Thai or English",
+          "maxLength": 100,
+          "minLength": 1
+        },
+        "gradeLevel": {
+          "type": "string",
+          "description": "Classroom or grade level, e.g. ม.1/1, ม.2/1",
+          "maxLength": 32,
+          "minLength": 1
+        },
+        "attendanceStatus": {
+          "type": "string",
+          "description": "Attendance status: มา, ลา, ขาด",
+          "enum": ["มา", "ลา", "ขาด"]
+        },
+        "midtermScore": {
+          "type": "number",
+          "description": "Midterm exam score between 0 and 50"
+        },
+        "finalScore": {
+          "type": "number",
+          "description": "Final exam score between 0 and 50"
+        },
+        "totalScore": {
+          "type": "number",
+          "description": "Calculated total score between 0 and 100"
+        },
+        "grade": {
+          "type": "string",
+          "description": "Calculated academic grade: 4, 3.5, 3, 2.5, 2, 1.5, 1, 0",
+          "maxLength": 10
+        },
+        "creatorUid": {
+          "type": "string",
+          "description": "Firebase user ID who created and owns this student record",
+          "maxLength": 128
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": [
+        "studentId",
+        "fullName",
+        "gradeLevel",
+        "attendanceStatus",
+        "midtermScore",
+        "finalScore",
+        "totalScore",
+        "grade",
+        "creatorUid"
+      ]
+    }
+  },
+  "firestore": {
+    "/students/{studentDocId}": {
+      "schema": {
+        "$ref": "#/entities/Student"
+      },
+      "description": "Collection of student records managed by authenticated educators"
+    }
+  }
+}
